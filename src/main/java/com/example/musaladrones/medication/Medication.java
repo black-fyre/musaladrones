@@ -1,10 +1,9 @@
 package com.example.musaladrones.medication;
 
 import com.example.musaladrones.drone.Drone;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import java.util.HashSet;
@@ -14,28 +13,31 @@ import java.util.UUID;
 @Entity
 public class Medication {
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private long id;
 
+    @NotBlank(message = "Name cannot be blank")
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Name should only contain letters, numbers, '_', and '-'")
     private String name;
 
-    private double weight;
+    @NotNull(message = "weight cannot be null")
+    private Double weight;
 
+    @NotBlank(message = "Code cannot be blank")
     @Pattern(regexp = "^[A-Z0-9_]+$", message = "Code should only contain uppercase letters, numbers, and '_'")
     private String code;
 
-    // Consider using appropriate types or libraries for handling images
+    // Could be AWS S3 or GCP Cloud Storage URL
     private String imageURL;
 
     @ManyToMany(mappedBy = "loadedMedications")
     private Set<Drone> loadedOnDrones = new HashSet<>();
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(long id) {
         this.id = id;
     }
 

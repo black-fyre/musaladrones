@@ -5,14 +5,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
 public class Drone {
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private long id;
 
     @Size(max = 100)
     @NotBlank(message = "Serial number is required")
@@ -22,17 +23,20 @@ public class Drone {
     @Enumerated(EnumType.STRING)
     private DroneModel model;
 
+    @NotNull(message = "Battery level is required")
     @Max(value = 100, message = "Battery percent cannot exceed 100")
     @Min(value = 0, message = "Battery percent cannot be lower than 100")
-    private int batteryCapacity;
+    private Integer batteryLevel;
 
     @NotNull(message = "State is required")
     @Enumerated(EnumType.STRING)
     private DroneState state;
 
 
+    @NotNull(message = "Weight limit is required")
     @Max(value = 500, message = "Weight limit should not exceed 500 grams")
-    private int weightLimit;
+    @Min(value = 0, message = "Weight limit should not be lower than 1 gram")
+    private Integer weightLimit;
 
 
 
@@ -51,12 +55,12 @@ public class Drone {
     public Drone(String serialNumber,
                  DroneModel model,
                  int weightLimit,
-                 int batteryCapacity,
+                 int batteryLevel,
                  DroneState state) {
         this.serialNumber = serialNumber;
         this.model = model;
         this.weightLimit = weightLimit;
-        this.batteryCapacity = batteryCapacity;
+        this.batteryLevel = batteryLevel;
         this.state = state;
     }
 
@@ -77,11 +81,11 @@ public class Drone {
         RETURNING
     }
 
-    public void setId(UUID id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 
@@ -101,12 +105,12 @@ public class Drone {
         this.model = model;
     }
 
-    public int getBatteryCapacity() {
-        return batteryCapacity;
+    public int getBatteryLevel() {
+        return batteryLevel;
     }
 
-    public void setBatteryCapacity(int batteryCapacity) {
-        this.batteryCapacity = batteryCapacity;
+    public void setBatteryLevel(int batteryCapacity) {
+        this.batteryLevel = batteryCapacity;
     }
 
     public DroneState getState() {

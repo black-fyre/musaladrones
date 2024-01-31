@@ -4,7 +4,6 @@ import com.example.musaladrones.drone.DispatchController;
 import com.example.musaladrones.drone.Drone;
 import com.example.musaladrones.drone.DroneService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -12,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DispatchController.class)
-@AutoConfigureMockMvc
 public class DispatchControllerTests {
     @Autowired
     private MockMvc mvc;
@@ -39,7 +38,7 @@ public class DispatchControllerTests {
         drone.setSerialNumber("ABC123");
         drone.setModel(Drone.DroneModel.LIGHTWEIGHT);
         drone.setWeightLimit(200);
-        drone.setBatteryCapacity(80);
+        drone.setBatteryLevel(80);
         drone.setState(Drone.DroneState.IDLE);
 
         mvc.perform(post("/api/drones/")
@@ -55,14 +54,14 @@ public class DispatchControllerTests {
         drone.setSerialNumber("ABC123");
         drone.setModel(Drone.DroneModel.LIGHTWEIGHT);
         drone.setWeightLimit(5500);
-        drone.setBatteryCapacity(80);
+        drone.setBatteryLevel(80);
         drone.setState(Drone.DroneState.IDLE);
 
         mvc.perform(post("/api/drones/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(drone)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("Drone registered successfully")));
+                .andExpect(content().string(containsString("Weight limit should not exceed 500")));
     }
 
     public void loadDroneMedications_WithValidDroneAndMedication_ShouldReturnSuccess() throws Exception{
@@ -90,41 +89,48 @@ public class DispatchControllerTests {
     public void getLoadedMedications_WithInvalidDroneID_ShouldThrowError() throws Exception{
     }
 
+    @Test
+    void getAvailableDrones_ShouldReturnDrones() throws Exception {
+        ArrayList<Drone> droneList  = new ArrayList<>();
 
+        Drone drone = new Drone();
+        drone.setSerialNumber("ABC123");
+        drone.setModel(Drone.DroneModel.LIGHTWEIGHT);
+        drone.setWeightLimit(300);
+        drone.setBatteryLevel(56);
+        drone.setState(Drone.DroneState.IDLE);
+        droneList.add(drone);
 
-
-//    @Test
-//    void shouldAvailableDrones_ShouldCallCorrectMethod() throws Exception {
-//        ArrayList<Drone> droneList  = new ArrayList<>();
-//
-//        Drone drone = new Drone();
-//        drone.setSerialNumber("ABC123");
-//        drone.setModel(Drone.DroneModel.LIGHTWEIGHT);
-//        drone.setWeightLimit(300);
-//        drone.setBatteryCapacity(56);
-//        drone.setState(Drone.DroneState.DELIVERING);
-//        droneList.add(drone);
-//
-//        when(droneService.getAvailableDronesForLoading()).thenReturn(droneList);
-//        this.mvc.perform(get("/api/drones/available-for-loading"))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(content().string(containsString("56")));
-//    }
-
-    public void getDroneBatteryCapacity_WithValidDrone_ShouldReturnCapacity() throws Exception{
-
+        when(droneService.getAvailableDronesForLoading()).thenReturn(droneList);
+        this.mvc.perform(get("/api/drones/available-for-loading"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(objectMapper.writeValueAsString(droneList))));
     }
 
-    public void getDroneBatteryCapacity_WithInValidDrone_ShouldThrowError() throws Exception{
-
+    @Test
+    void getDroneBatteryLevel_WithExistingDrone_ShouldReturnCapacity() throws Exception {
+        long fakeDroneID = ThreadLocalRandom.current().nextLong();
+        int  fakeDroneBatteryLevel = 25;
+        when(droneService.getDroneBatteryCapacity(fakeDroneID)).thenReturn(fakeDroneBatteryLevel);
+        this.mvc.perform(get("/api/drones/"+ fakeDroneID +"/battery-level"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString( fakeDroneID +  " is " + fakeDroneBatteryLevel)));
     }
 
-    public void getDroneById_WithValidDrone_ShouldReturnDrone() throws Exception{
-
+    @Test
+    void getDroneBatteryLevel_WithNonExistentDrone_ShouldThrowError() throws Exception {
+        long fakeInvalidDroneID = ThreadLocalRandom.current().nextLong();
+        String errorMessage = "Drone not found";
+        when(droneService.getDroneBatteryCapacity(fakeInvalidDroneID))
+                .thenThrow(new IllegalArgumentException(errorMessage));
+        this.mvc.perform(get("/api/drones/" + fakeInvalidDroneID + "/battery-level"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(errorMessage)));
     }
 
-    public void checkBatteryLevelsAndLog_ShouldLogBatteryLevels() throws Exception{
+    @Test
+    void getDroneBatteryLevel_WithInvalidIDFormat_ShouldThrowError() throws Exception {
 
     }
 }

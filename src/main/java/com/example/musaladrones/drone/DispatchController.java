@@ -18,13 +18,13 @@ public class DispatchController {
     private DroneService droneService;
 
     @PostMapping("/")
-    public ResponseEntity<String> registerDrone(@Valid Drone drone) {
+    public ResponseEntity<String> registerDrone(@RequestBody @Valid Drone drone) {
         droneService.registerDrone(drone);
         return new ResponseEntity<>("Drone registered successfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/{droneId}/load")
-    public ResponseEntity<String> loadDrone(@PathVariable Long droneId, @RequestBody Set<Medication> medications) {
+    public ResponseEntity<String> loadDrone(@PathVariable Long droneId, @RequestBody @Valid Set<Medication> medications) {
         droneService.loadDrone(droneId, medications);
         return new ResponseEntity<>("Medications loaded successfully", HttpStatus.OK);
     }
@@ -42,9 +42,14 @@ public class DispatchController {
     }
 
     @GetMapping("/{droneId}/battery-level")
-    public ResponseEntity<Integer> getDroneBatteryLevel(@PathVariable Long droneId) {
-        int batteryLevel = droneService.getDroneBatteryCapacity(droneId);
-        return new ResponseEntity<>(batteryLevel, HttpStatus.OK);
+    public ResponseEntity<String> getDroneBatteryLevel(@PathVariable Long droneId) {
+        try {
+            int batteryLevel = droneService.getDroneBatteryCapacity(droneId);
+            return new ResponseEntity<>("The battery level for drone " + droneId + " is " + batteryLevel, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 }
 
