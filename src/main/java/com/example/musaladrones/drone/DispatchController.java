@@ -1,6 +1,7 @@
 package com.example.musaladrones.drone;
 
 import com.example.musaladrones.medication.Medication;
+import com.example.musaladrones.medication.MedicationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,9 +15,16 @@ import java.util.Set;
 @RequestMapping("/api/drones")
 public class DispatchController {
 
-    @Autowired
-    private DroneService droneService;
+    private final DroneService droneService;
 
+    private final MedicationService medicationService;
+
+    @Autowired
+    public DispatchController(DroneService droneService,
+                              MedicationService medicationService) {
+        this.droneService = droneService;
+        this.medicationService = medicationService;
+    }
     @PostMapping("/")
     public ResponseEntity<String> registerDrone(@RequestBody @Valid Drone drone) {
         droneService.registerDrone(drone);
@@ -24,9 +32,10 @@ public class DispatchController {
     }
 
     @PostMapping("/{droneId}/load")
-    public ResponseEntity<String> loadDrone(@PathVariable Long droneId, @RequestBody @Valid Set<Medication> medications) {
-        droneService.loadDrone(droneId, medications);
-        return new ResponseEntity<>("Medications loaded successfully", HttpStatus.OK);
+    public ResponseEntity<Drone> loadDrone(@PathVariable Long droneId, @RequestBody List<Long> medicationIds) {
+        List<Medication> medications = medicationService.getAllMedicationsbyId(medicationIds);
+        Drone loadedDrone = droneService.loadDrone(droneId, medications);
+        return new ResponseEntity<>(loadedDrone, HttpStatus.OK);
     }
 
     @GetMapping("/{droneId}/loaded-medications")

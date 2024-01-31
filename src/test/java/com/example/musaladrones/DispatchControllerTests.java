@@ -1,4 +1,5 @@
 package com.example.musaladrones;
+import com.example.musaladrones.medication.MedicationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.musaladrones.drone.DispatchController;
 import com.example.musaladrones.drone.Drone;
@@ -11,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.Matchers.containsString;
@@ -32,8 +35,11 @@ public class DispatchControllerTests {
     @MockBean
     private DroneService droneService;
 
+    @MockBean
+    private MedicationService medicationService;
+
     @Test
-    public void registerDrone_WithValidDroneData_ShouldCreateDroneSuccessfully() throws Exception {
+    void registerDrone_WithValidDroneData_ShouldCreateDroneSuccessfully() throws Exception {
         Drone drone = new Drone();
         drone.setSerialNumber("ABC123");
         drone.setModel(Drone.DroneModel.LIGHTWEIGHT);
@@ -49,7 +55,7 @@ public class DispatchControllerTests {
     }
 
     @Test
-    public void registerDrone_WithInvalidDroneData_ShouldValidateDataAndThrowError() throws Exception {
+    void registerDrone_WithInvalidDroneData_ShouldValidateDataAndThrowError() throws Exception {
         Drone drone = new Drone();
         drone.setSerialNumber("ABC123");
         drone.setModel(Drone.DroneModel.LIGHTWEIGHT);
@@ -64,8 +70,19 @@ public class DispatchControllerTests {
                 .andExpect(content().string(containsString("Weight limit should not exceed 500")));
     }
 
-    public void loadDroneMedications_WithValidDroneAndMedication_ShouldReturnSuccess() throws Exception{
+    @Test
+    void loadDroneMedications_WithValidDroneAndMedication_ShouldReturnSuccess() throws Exception{
         //Validate that it is in LOADED state
+       long fakeDroneID = ThreadLocalRandom.current().nextLong();;
+       List<Long> medicationIds = Arrays.asList(1L, 2L, 3L, 4L, 5L);
+        when(droneService.loadDrone(fakeDroneID, medicationIds)).thenReturn(fakeDroneBatteryLevel);
+        mvc.perform(post("/api/" + droneId + "/load")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(medicationIds)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(objectMapper.writeValueAsString(medicationIds))));
+
 
     }
     public void loadDroneMedications_WithInvalidDroneAndMedication_ShouldThrowError() throws Exception{

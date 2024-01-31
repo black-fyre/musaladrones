@@ -20,6 +20,10 @@ public class MedicationService {
     public List<Medication> getAllMedications() {
         return medicationRepository.findAll();
     }
+
+    public List<Medication> getAllMedicationsbyId(List<Long> medicationIds) {
+        return  medicationRepository.findAllById(medicationIds);
+    }
     public Medication createMedication(Medication medication) {
         return medicationRepository.save(medication);
     }

@@ -4,41 +4,43 @@ import com.example.musaladrones.dronehistory.DroneHistory;
 import com.example.musaladrones.medication.Medication;
 import com.example.musaladrones.dronehistory.DroneHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class DroneService {
-    @Autowired
-    private DroneRepository droneRepository;
 
+    private final DroneRepository droneRepository;
+
+    private final DroneHistoryRepository droneHistoryRepository;
+    ++
     @Autowired
-    private DroneHistoryRepository droneHistoryRepository;
+    public DroneService(DroneRepository droneRepository,
+                        DroneHistoryRepository droneHistoryRepository) {
+        this.droneRepository = droneRepository;
+        this.droneHistoryRepository = droneHistoryRepository;
+    }
 
     public void registerDrone(Drone drone) {
         // Additional validation or business logic can be added here
         droneRepository.save(drone);
     }
 
-    public void loadDrone(Long droneId, Set<Medication> medications) {
+    public Drone loadDrone(Long droneId, List<Medication> medications) {
         Drone drone = getDroneById(droneId);
 
-        // Check weight limit
         if (checkIfWeightAboveDroneLimit(drone, medications)) {
             throw new IllegalArgumentException("Drone cannot be loaded with more weight than it can carry");
         }
 
-        // Check battery level
         if (drone.getBatteryLevel() < 25) {
             throw new IllegalArgumentException("Drone battery level is below 25%, cannot be in LOADING state");
         }
+
         drone.setState(Drone.DroneState.LOADING);
 
         drone.getLoadedMedications().addAll(medications);
@@ -46,7 +48,7 @@ public class DroneService {
         drone.setState(Drone.DroneState.LOADED);
 
         // Additional logic like updating battery level can be added here
-        droneRepository.save(drone);
+        return droneRepository.save(drone);
     }
     public Set<Medication> getLoadedMedications(Long droneId) {
         Drone drone = getDroneById(droneId);
@@ -88,7 +90,7 @@ public class DroneService {
         droneHistoryRepository.save(droneHistory);
     }
 
-    private Boolean checkIfWeightAboveDroneLimit(Drone drone, Set<Medication> medications) {
+    private Boolean checkIfWeightAboveDroneLimit(Drone drone, List<Medication> medications) {
         double totalWeight = medications.stream().mapToDouble(Medication::getWeight).sum();
         return totalWeight > drone.getWeightLimit();
     }
