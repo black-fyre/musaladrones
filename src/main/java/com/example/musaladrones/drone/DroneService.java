@@ -17,7 +17,7 @@ public class DroneService {
     private final DroneRepository droneRepository;
 
     private final DroneHistoryRepository droneHistoryRepository;
-    ++
+
     @Autowired
     public DroneService(DroneRepository droneRepository,
                         DroneHistoryRepository droneHistoryRepository) {
@@ -26,7 +26,7 @@ public class DroneService {
     }
 
     public void registerDrone(Drone drone) {
-        // Additional validation or business logic can be added here
+        // Additional validation or business logic
         droneRepository.save(drone);
     }
 
@@ -47,7 +47,7 @@ public class DroneService {
 
         drone.setState(Drone.DroneState.LOADED);
 
-        // Additional logic like updating battery level can be added here
+        // Additional logic like updating battery level
         return droneRepository.save(drone);
     }
     public Set<Medication> getLoadedMedications(Long droneId) {
@@ -76,9 +76,9 @@ public class DroneService {
         List<Drone> drones = droneRepository.findAll();
 
         for (Drone drone : drones) {
-            if (drone.getBatteryLevel() < 25) {
-                createDroneHistoryLog(drone, "Battery level below 25%");
-            }
+            createDroneHistoryLog(drone,  """ 
+        Battery level for drone %s is %d
+        """.formatted(drone.getSerialNumber(), drone.getBatteryLevel()));
         }
     }
 

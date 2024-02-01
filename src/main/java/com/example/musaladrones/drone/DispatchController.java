@@ -33,7 +33,7 @@ public class DispatchController {
 
     @PostMapping("/{droneId}/load")
     public ResponseEntity<Drone> loadDrone(@PathVariable Long droneId, @RequestBody List<Long> medicationIds) {
-        List<Medication> medications = medicationService.getAllMedicationsbyId(medicationIds);
+        List<Medication> medications = medicationService.getAllMedicationsbyIds(medicationIds);
         Drone loadedDrone = droneService.loadDrone(droneId, medications);
         return new ResponseEntity<>(loadedDrone, HttpStatus.OK);
     }

@@ -33,6 +33,7 @@ public class Medication {
     @ManyToMany(mappedBy = "loadedMedications")
     private Set<Drone> loadedOnDrones = new HashSet<>();
 
+
     public long getId() {
         return id;
     }

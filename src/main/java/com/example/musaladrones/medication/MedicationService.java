@@ -1,17 +1,20 @@
 package com.example.musaladrones.medication;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class MedicationService {
 
+
+    private final MedicationRepository medicationRepository;
+
     @Autowired
-    private MedicationRepository medicationRepository;
+    public MedicationService(MedicationRepository medicationRepository) {
+        this.medicationRepository = medicationRepository;
+    }
 
     public Medication getMedicationById(Long medicationId) {
         return medicationRepository.findById(medicationId)
@@ -21,7 +24,7 @@ public class MedicationService {
         return medicationRepository.findAll();
     }
 
-    public List<Medication> getAllMedicationsbyId(List<Long> medicationIds) {
+    public List<Medication> getAllMedicationsbyIds(List<Long> medicationIds) {
         return  medicationRepository.findAllById(medicationIds);
     }
     public Medication createMedication(Medication medication) {

@@ -14,8 +14,12 @@ import java.util.Set;
 @RequestMapping("/api/medications")
 public class MedicationController {
 
+    private final MedicationService medicationService;
+
     @Autowired
-    private MedicationService medicationService;
+    public MedicationController(MedicationService medicationService) {
+        this.medicationService = medicationService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Medication>> getAllMedications() {
