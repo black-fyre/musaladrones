@@ -1,72 +1,62 @@
-## Drones
+# Drones Service API
 
-[[_TOC_]]
+## Table of Contents
+- [Introduction](#introduction)
+- [Task Description](#task-description)
+- [Requirements](#requirements)
+    - [Functional Requirements](#functional-requirements)
+    - [Non-functional Requirements](#non-functional-requirements)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Building](#building)
+    - [Running](#running)
+    - [Testing](#testing)
+## Introduction
+The Drones Service API is designed to manage a fleet of drones for delivering medications. Drones can be registered, loaded with medication items, and their status can be checked. This API aims to facilitate communication with drones for medication delivery.
 
----
+## Task Description
+The project involves creating a REST API service, known as the dispatch controller, to interact with a fleet of drones. Each drone has specific attributes such as serial number, model, weight limit, battery capacity, and state. Additionally, medications can be associated with drones, each having a name, weight, code, and image.
 
-:scroll: **START**
+## Requirements
 
+### Functional Requirements
+- The service prevents drones from being loaded with more weight than they can carry.
+- Drones can not be in LOADING state if the battery level is below 25%.
+- There is periodic task to check drones' battery levels and create history/audit event logs.
 
-### Introduction
+### Non-functional Requirements
+- Input/output data must be in JSON format.
+- The project is buildable and runnable.
+- It uses a database that can be run locally.
+- Required data is preloaded in the database.
+- JUnit tests are incorporated.
 
-There is a major new technology that is destined to be a disruptive force in the field of transportation: **the drone**. Just as the mobile phone allowed developing countries to leapfrog older technologies for personal communication, the drone has the potential to leapfrog traditional transportation infrastructure.
+## Getting Started
 
-Useful drone functions include delivery of small items that are (urgently) needed in locations with difficult access.
+### Prerequisites
+- Java 17 or higher
+- Maven
 
----
+### Building
+1. Clone the repository.
+2. Navigate to the project root directory.
+3. Build the project:
+    ```bash
+    ./mvnw clean install
+    ```
 
-### Task description
+### Running
+1. Run the project without building:
+    ```bash
+    ./mvnw clean spring-boot:run 
+    ```
+#### OR
+2. Run the project:
+    ```bash
+    java -jar target/MusalaDrones-0.0.1-SNAPSHOT.jar
+    ```
 
-We have a fleet of **10 drones**. A drone is capable of carrying devices, other than cameras, and capable of delivering small loads. For our use case **the load is medications**.
-
-A **Drone** has:
-- serial number (100 characters max);
-- model (Lightweight, Middleweight, Cruiserweight, Heavyweight);
-- weight limit (500gr max);
-- battery capacity (percentage);
-- state (IDLE, LOADING, LOADED, DELIVERING, DELIVERED, RETURNING).
-
-Each **Medication** has: 
-- name (allowed only letters, numbers, ‘-‘, ‘_’);
-- weight;
-- code (allowed only upper case letters, underscore and numbers);
-- image (picture of the medication case).
-
-Develop a service via REST API that allows clients to communicate with the drones (i.e. **dispatch controller**). The specific communicaiton with the drone is outside the scope of this task. 
-
-The service should allow:
-- registering a drone;
-- loading a drone with medication items;
-- checking loaded medication items for a given drone; 
-- checking available drones for loading;
-- check drone battery level for a given drone;
-
-> Feel free to make assumptions for the design approach. 
-
----
-
-### Requirements
-
-While implementing your solution **please take care of the following requirements**: 
-
-#### Functional requirements
-
-- There is no need for UI;
-- Prevent the drone from being loaded with more weight that it can carry;
-- Prevent the drone from being in LOADING state if the battery level is **below 25%**;
-- Introduce a periodic task to check drones battery levels and create history/audit event log for this.
-
----
-
-#### Non-functional requirements
-
-- Input/output data must be in JSON format;
-- Your project must be buildable and runnable;
-- Your project must have a README file with build/run/test instructions (use DB that can be run locally, e.g. in-memory, via container);
-- Required data must be preloaded in the database.
-- JUnit tests are mandatory (or tests done in the respective framework based on the technology used for the task);
-- Advice: Show us how you work through your commit history.
-
----
-
-:scroll: **END**
+### Testing
+1. Run tests:
+   ```bash
+   ./mvnw test

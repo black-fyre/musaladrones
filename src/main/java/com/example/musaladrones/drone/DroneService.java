@@ -71,7 +71,7 @@ public class DroneService {
                 .orElseThrow(() -> new IllegalArgumentException("Drone with id " + droneId + " not found"));
     }
 
-    @Scheduled(cron = "0 0 * * * ?") // Runs every hour
+    @Scheduled(cron = "0 * * * * ?") // Runs every hour
     public void checkBatteryLevelsAndLog() {
         List<Drone> drones = droneRepository.findAll();
 
