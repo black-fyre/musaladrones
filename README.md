@@ -44,7 +44,6 @@ The project involves creating a REST API service, known as the dispatch controll
     ```bash
     ./mvnw clean install
     ```
-
 ### Running
 1. Run the project without building:
     ```bash
@@ -55,6 +54,8 @@ The project involves creating a REST API service, known as the dispatch controll
     ```bash
     java -jar target/MusalaDrones-0.0.1-SNAPSHOT.jar
     ```
+### API Documentation
+[Swagger UI](http://localhost:8080/swagger-ui/index.html)
 
 ### Testing
 1. Run tests:
