@@ -25,9 +25,9 @@ public class DroneService {
         this.droneHistoryRepository = droneHistoryRepository;
     }
 
-    public void registerDrone(Drone drone) {
+    public Drone registerDrone(Drone drone) {
         // Additional validation or business logic
-        droneRepository.save(drone);
+        return droneRepository.save(drone);
     }
 
     public Drone loadDrone(Long droneId, List<Medication> medications) {

@@ -28,7 +28,7 @@ class MedicationServiceTest {
     }
 
     @Test
-    void testGetMedicationById_WithExistingId_ShouldReturnMedication() {
+    void getMedicationById_WithExistingId_ShouldReturnMedication() {
 
         Long medicationId = 1L;
         Medication mockMedication = new Medication();
@@ -39,7 +39,7 @@ class MedicationServiceTest {
     }
 
     @Test
-    void testGetMedicationById_NonExistingId_ShouldThrowException() {
+    void getMedicationById_NonExistingId_ShouldThrowException() {
         Long medicationId = 1L;
         when(medicationRepository.findById(medicationId)).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class, () -> medicationService.getMedicationById(medicationId));
@@ -47,7 +47,7 @@ class MedicationServiceTest {
     }
 
     @Test
-    void testGetAllMedications_ShouldReturnAllMedications() {
+    void getAllMedications_ShouldReturnAllMedications() {
         List<Medication> mockMedications = Arrays.asList(new Medication(), new Medication());
         when(medicationRepository.findAll()).thenReturn(mockMedications);
         List<Medication> result = medicationService.getAllMedications();
@@ -56,7 +56,7 @@ class MedicationServiceTest {
     }
 
     @Test
-    void testGetAllMedicationsByIds_ShouldReturnMedications() {
+    void getAllMedicationsByIds_ShouldReturnMedications() {
         List<Long> medicationIds = Arrays.asList(1L, 2L);
         List<Medication> mockMedications = Arrays.asList(new Medication(), new Medication());
         when(medicationRepository.findAllById(medicationIds)).thenReturn(mockMedications);
@@ -66,7 +66,7 @@ class MedicationServiceTest {
     }
 
     @Test
-    void testCreateMedication_ShouldReturnCreatedMedication() {
+    void createMedication_ShouldReturnCreatedMedication() {
         Medication mockMedication = new Medication();
         when(medicationRepository.save(mockMedication)).thenReturn(mockMedication);
         Medication result = medicationService.createMedication(mockMedication);

@@ -26,9 +26,9 @@ public class DispatchController {
         this.medicationService = medicationService;
     }
     @PostMapping("/")
-    public ResponseEntity<String> registerDrone(@RequestBody @Valid Drone drone) {
-        droneService.registerDrone(drone);
-        return new ResponseEntity<>("Drone registered successfully", HttpStatus.CREATED);
+    public ResponseEntity<Drone> registerDrone(@RequestBody @Valid Drone drone) {
+        Drone createdDrone = droneService.registerDrone(drone);
+        return new ResponseEntity<>(createdDrone, HttpStatus.CREATED);
     }
 
     @PostMapping("/{droneId}/load")
