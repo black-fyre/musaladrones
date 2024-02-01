@@ -40,7 +40,7 @@ class MedicationControllerTest {
     }
 
     @Test
-    void testCreateMedication_WithValidData_ShouldReturnCreatedStatus() throws Exception {
+    void createMedication_WithValidData_ShouldReturnCreatedStatus() throws Exception {
         Medication mockMedication = createMedication();
         when(medicationService.createMedication(any())).thenReturn(mockMedication);
         mockMvc.perform(post("/api/medications/")
@@ -52,7 +52,7 @@ class MedicationControllerTest {
     }
 
     @Test
-    void testCreateMedication_WithInvalidData_ShouldReturnBadRequest() throws Exception {
+    void createMedication_WithInvalidData_ShouldReturnBadRequest() throws Exception {
         Medication invalidMedication = createMedication();
         invalidMedication.setName("**");// This medication is intentionally left invalid
         mockMvc.perform(post("/api/medications/")

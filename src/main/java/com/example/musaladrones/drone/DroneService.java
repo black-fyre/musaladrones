@@ -66,12 +66,12 @@ public class DroneService {
 
     }
 
-    private Drone getDroneById(Long droneId) {
+    public Drone getDroneById(Long droneId) {
         return droneRepository.findById(droneId)
                 .orElseThrow(() -> new IllegalArgumentException("Drone with id " + droneId + " not found"));
     }
 
-    @Scheduled(cron = "0 * * * * ?") // Runs every hour
+    @Scheduled(cron = "0 * * * * ?") // Runs every minute
     public void checkBatteryLevelsAndLog() {
         List<Drone> drones = droneRepository.findAll();
 

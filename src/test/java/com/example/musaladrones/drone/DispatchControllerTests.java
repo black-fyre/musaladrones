@@ -60,6 +60,18 @@ public class DispatchControllerTests {
     }
 
     @Test
+    public void getDroneById_ShouldReturnDrone() throws Exception {
+        Drone mockDrone = createDrone();
+        when(droneService.getDroneById(eq(1L))).thenReturn(mockDrone);
+
+        mvc.perform(get("/api/drones/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.serialNumber").value(mockDrone.getSerialNumber()));
+    }
+
+    @Test
     void loadDroneMedications_WithValidDroneAndMedication_ShouldReturnSuccess() throws Exception{
         //Validate that it is in LOADED state
        long fakeDroneID = ThreadLocalRandom.current().nextLong();
@@ -101,7 +113,8 @@ public class DispatchControllerTests {
         droneList.add(drone);
 
         when(droneService.getAvailableDronesForLoading()).thenReturn(droneList);
-        this.mvc.perform(get("/api/drones/available-for-loading"))
+        this.mvc.perform(get("/api/drones/available-for-loading")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(objectMapper.writeValueAsString(droneList))));
     }
@@ -111,7 +124,8 @@ public class DispatchControllerTests {
         long fakeDroneID = ThreadLocalRandom.current().nextLong();
         int  fakeDroneBatteryLevel = 25;
         when(droneService.getDroneBatteryCapacity(fakeDroneID)).thenReturn(fakeDroneBatteryLevel);
-        this.mvc.perform(get("/api/drones/{droneId}/battery-level", fakeDroneID))
+        this.mvc.perform(get("/api/drones/{droneId}/battery-level", fakeDroneID)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString( fakeDroneID +  " is " + fakeDroneBatteryLevel)));
         verify(droneService, times(1)).getDroneBatteryCapacity(eq(fakeDroneID));
@@ -123,7 +137,8 @@ public class DispatchControllerTests {
         String errorMessage = "Drone not found";
         when(droneService.getDroneBatteryCapacity(fakeInvalidDroneID))
                 .thenThrow(new IllegalArgumentException(errorMessage));
-        this.mvc.perform(get("/api/drones/{droneId}/battery-level", fakeInvalidDroneID))
+        this.mvc.perform(get("/api/drones/{droneId}/battery-level", fakeInvalidDroneID)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString(errorMessage)));
         verify(droneService, times(1)).getDroneBatteryCapacity(eq(fakeInvalidDroneID));

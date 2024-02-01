@@ -5,6 +5,7 @@ import com.example.musaladrones.medication.MedicationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/drones")
+@RequestMapping(path = "/api/drones", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 public class DispatchController {
 
     private final DroneService droneService;
@@ -29,6 +30,12 @@ public class DispatchController {
     public ResponseEntity<Drone> registerDrone(@RequestBody @Valid Drone drone) {
         Drone createdDrone = droneService.registerDrone(drone);
         return new ResponseEntity<>(createdDrone, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{droneId}")
+    public ResponseEntity<Drone> getDroneById(@PathVariable Long droneId) {
+        Drone drone = droneService.getDroneById(droneId);
+        return new ResponseEntity<>(drone, HttpStatus.OK);
     }
 
     @PostMapping("/{droneId}/load")
